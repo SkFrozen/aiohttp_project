@@ -2,6 +2,7 @@ from aiohttp import web
 from aiohttp_session import get_session
 
 from app.db.base import session_maker
+from app.middlewares import redis
 
 from .users import get_user_by_credentials
 
@@ -34,4 +35,4 @@ async def login(request: web.Request, username: str, password: str) -> None:
 
 async def logout(request: web.Request):
     session = await get_session(request)
-    session.clear()
+    result = await redis.delete(f"AIOHTTP_SESSION_{session.identity}")

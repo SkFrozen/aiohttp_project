@@ -19,6 +19,7 @@ class HomeView(web.View):
     @template("index.html")
     async def get(self):
         notes = await get_notes()
+        print(notes)
         return {"notes": notes}
 
 
@@ -27,9 +28,13 @@ class ListCreateNoteView(web.View):
     @template("list_create_note.html")
     async def get(self):
 
-        note_fitler = get_note_filter(self.request)
-        notes = await get_filtered_notes(self.request.user_id, note_fitler)
-        tags = await get_tags()
+        try:
+            note_fitler = get_note_filter(self.request)
+            notes = await get_filtered_notes(self.request.user_id, note_fitler)
+            tags = await get_tags()
+
+        except ValueError:
+            return web.HTTPMovedPermanently("/login")
         return {"notes": notes, "tags": tags}
 
     @template("list_create_note.html")
@@ -42,8 +47,8 @@ class ListCreateNoteView(web.View):
         try:
             await create_note(title, content, self.request.user_id, tags=tags)
 
-        except UserNotFoundError:
-            return web.HTTPFound("/login")
+        except ValueError:
+            return web.HTTPMovedPermanently("/login")
 
         return web.HTTPMovedPermanently("/notes")
 
@@ -80,7 +85,7 @@ class RegistrationView(web.View):
         except ValueError:
             return {"error": "Username already exists"}
 
-        return web.HTTPMovedPermanently("/home")
+        return web.HTTPMovedPermanently("/login")
 
 
 class LoginView(web.View):
@@ -103,8 +108,9 @@ class LoginView(web.View):
 
 
 class LogOutView(web.View):
-
+    @template("logout.html")
     async def get(self):
 
         await logout(self.request)
-        return web.HTTPMovedPermanently("/login")
+        self.request.user_id = None
+        return {}

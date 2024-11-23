@@ -10,13 +10,14 @@ async def create_user(email: str, username: str, password: str) -> None:
     async with session_maker() as session:
         hashed_pass = hash_password(password)
         user = User(email=email, username=username, password=hashed_pass)
+
         session.add(user)
         try:
             await session.flush()
             await session.commit()
         except:
-            await session.rollback()
             raise ValueError
+        return user
 
 
 async def get_user_by_id(session: AsyncSession, user_id: int) -> User | None:

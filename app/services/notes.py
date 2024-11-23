@@ -24,14 +24,32 @@ async def get_note(note_id: int):
 async def get_notes():
     async with session_maker() as session:
         query = (
-            select(Note)
+            select(
+                Note.id,
+                Note.title,
+                User.username,
+                array_agg(Tag.name).label("tags"),
+                Note.created_at,
+            )
+            .join(User, Note.author_id == User.id)
             .join(NoteTag, Note.id == NoteTag.note_id)
             .join(Tag, NoteTag.tag_name == Tag.name)
+            .group_by(Note.id, User.username)
             .order_by(Note.created_at.desc())
             .limit(10)
         )
         result = await session.execute(query)
-        return result.scalars().all()
+
+        return [
+            {
+                "id": row[0],
+                "title": row[1],
+                "username": row[2],
+                "tags": row[3],
+                "created_at": row[4].strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            for row in result
+        ]
 
 
 async def get_filtered_notes(user_id: int, filters: dict):
@@ -40,7 +58,7 @@ async def get_filtered_notes(user_id: int, filters: dict):
         user = await get_user_by_id(session, user_id)
 
         if user is None:
-            raise UserNotFoundError
+            raise ValueError
 
         notes = await get_user_notes(session, user_id, filters)
 
@@ -89,7 +107,7 @@ async def create_note(title: str, content: str, user_id: int, tags: str):
     async with session_maker() as session:
         user = await get_user_by_id(session, user_id)
         if user is None:
-            raise UserNotFoundError
+            raise ValueError
         lst_tags = list(map(str.strip, tags.split(",")))
         tags = await get_or_create_tags(session, lst_tags)
         note = Note(title=title, content=content, author_id=user_id, tags=tags)
