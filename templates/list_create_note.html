@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <section class="py-5 text-center container">
+        <div class="row py-lg-5">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <h1 class="fw-light">Album example</h1>
+                <p class="lead text-body-secondary">Something short and leading about the collection below—its contents,
+                    the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it
+                    entirely.</p>
+                <p>
+                    <a href="#" class="btn btn-primary my-2">Main call to action</a>
+                    <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+
+    <div class="album py-5 bg-body-tertiary">
+        <div class="container">
+
+            <div class="d-flex justify-content-center">
+                <form method="post" class="w-50 d-flex flex-column gap-2">
+
+                    <div>
+                        <label for="title" class="form-label">Название</label>
+                        <div class="input-group has-validation">
+                            <input type="text" class="form-control" id="title" placeholder="Название" name="title"
+                                required/>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="content" class="form-label">Содержимое</label>
+                        <div class="input-group has-validation">
+                            <textarea class="form-control" id="content" name="content" rows="7" required></textarea>
+                        </div>
+                    </div> 
+                    <div>
+                        <div class="input-group has-validation">
+                            <label for="title" class="form-label">Метки</label>
+                            <div class="input-group has-validation">
+                                <input type="text" class="form-control" id="tags" placeholder="sql, python..." name="tags"
+                                    required/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+
+                </form>
+            </div>
+
+            <div class="row justify-content-center row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 my-4">
+                {% for note in notes %}
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <svg class="bd-placeholder-img card-img-top" width="100%" height="125"
+                                 xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail"
+                                 preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title>
+                                <rect width="100%" height="100%" fill="#55595c"></rect>
+                            </svg>
+                            <div class="card-body">
+                                <div class="mb-3 card-text fs-3">{{ note.title }}</div>
+                                <div class="d-flex gap-1 mb-3">
+                                    {% for tag in note.tags %}
+                                        <div class="badge bg-primary">{{ tag }}</div>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="btn-group">
+                                        <a href="{{ '/notes/%s'%note.id }}" type="button" class="btn btn-sm btn-outline-secondary">View</a>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                    </div>
+                                    <small class="text-body-secondary">{{ note.created_at }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

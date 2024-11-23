@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block  content %}
+
+    <main>
+      {%if error%}
+      <p class="d-block w-25 ms-auto me-auto" style="color: red">{{ error }}</p>
+      {% endif %}
+        <form class="container-lg" method="post">
+            <div class="mb-3 w-50 p-3 mt-3 mb-3 ms-auto me-auto">
+
+                <div class="form-floating">
+                  <input type="text" class="form-control" id="floatingInput" name="usernameInput">
+                  <label for="floatingInput">Username</label>
+                </div>
+                <div class="form-floating">
+                  <input type="email" class="form-control" id="floatingInput" name="emailInput">
+                  <label for="floatingInput">Email</label>
+                </div>
+                <div class="form-floating">
+                  <input type="password" class="form-control" id="floatingPassword" name="passwordInput">
+                  <label for="floatingPassword">Password</label>
+                </div>
+            </div>
+
+          <button class="w-50 btn btn-lg btn-primary mx-auto d-block" type="submit">Зарегестрироваться</button>
+        </form>
+      </main>
+
+{% endblock %}
